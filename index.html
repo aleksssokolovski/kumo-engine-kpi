@@ -76,6 +76,13 @@
     background: linear-gradient(90deg, transparent, var(--nv-green), transparent);
     border-radius: 2px;
   }
+  .header .logo {
+    margin-bottom: 16px;
+  }
+  .header .logo img {
+    height: 80px;
+    filter: drop-shadow(0 0 20px rgba(118,185,0,0.3));
+  }
   .header .badge {
     display: inline-block;
     padding: 4px 14px;
@@ -212,7 +219,8 @@
     text-align: center;
     padding: 32px 0 16px;
     color: var(--text-muted);
-    font-size: 0.7rem;
+    font-size: 0.72rem;
+    line-height: 1.8;
   }
   .footer a { color: var(--nv-green); text-decoration: none; }
 </style>
@@ -222,10 +230,15 @@
 
   <!-- Header -->
   <div class="header">
-    <div class="badge">📦 PyPI Tracker</div>
-    <h1>Kumo Engine — Downloads KPI</h1>
+    <div class="logo">
+      <picture>
+        <img src="https://raw.githubusercontent.com/NVIDIA/kumo-engine/main/assets/kumo-engine-dark.svg" alt="Kumo Engine" height="80">
+      </picture>
+    </div>
+    <div class="badge">📦 Kumo Engine PyPI Tracker</div>
+    <h1>Kumo Engine PyPI Downloads</h1>
     <div class="subtitle">Daily download tracking for <a href="https://pypi.org/project/kumo-engine/" style="color:var(--nv-green);text-decoration:none">kumo-engine</a> on PyPI</div>
-    <div class="last-updated">Last updated: <span id="lastUpdated">—</span></div>
+    <div class="last-updated">Last updated: <span id="lastUpdated">—</span> · 🔄 Data refreshed daily at 12:00 noon (Europe, GMT+2)</div>
   </div>
 
   <!-- KPI Cards -->
@@ -234,7 +247,7 @@
   <!-- Downloads Over Time chart -->
   <div class="section">
     <div class="section-header">
-      <h2>📈 Downloads Over Time</h2>
+      <h2>📈 Kumo Engine PyPI Downloads Over Time</h2>
       <span class="section-badge" style="background:rgba(59,130,246,0.12);color:var(--accent-blue)">Cumulative + Daily</span>
     </div>
     <div id="downloadsTimeChart" style="min-height:420px"></div>
@@ -256,14 +269,24 @@
 
   <!-- Footer -->
   <div class="footer">
-    <p>Kumo Engine KPI Dashboard · Data from <a href="https://pypistats.org/packages/kumo-engine" target="_blank">PyPI Stats</a> · NVIDIA</p>
+    <p>Data collected by <a href="https://github.com/aleksssokolovski/kumo-engine-kpi" target="_blank">Kumo Engine KPI</a> · Updated daily at 12:00 noon Europe (GMT+2) · NVIDIA SW-GPU · Author: Aleksandar S. Sokolovski</p>
+    <p style="margin-top:4px">Source: <a href="https://pypistats.org/packages/kumo-engine" target="_blank">PyPI Stats</a> · <a href="https://pypi.org/project/kumo-engine/" target="_blank">PyPI</a> · <a href="https://github.com/NVIDIA/kumo-engine" target="_blank">GitHub</a></p>
   </div>
 
 </div>
 
 <script>
 const CSV_RAW = `date,pypi_daily,pypi_cumulative
-2026-10-26,483,483`;
+2026-10-17,188,188
+2026-10-18,17,205
+2026-10-19,26,231
+2026-10-20,39,270
+2026-10-21,148,418
+2026-10-22,41,459
+2026-10-23,9,468
+2026-10-24,7,475
+2026-10-25,8,483
+2026-10-26,0,483`;
 
 function parseCSV(raw) {
   const lines = raw.trim().split('\n');
@@ -293,8 +316,8 @@ function renderCards(data) {
   const prev = data.length > 1 ? data[data.length - 2] : latest;
 
   const cards = [
-    { label: 'Cumulative Downloads', value: latest.pypi_cumulative, prev: prev.pypi_cumulative, color: '#3b82f6', icon: '📦' },
-    { label: 'Daily Downloads', value: latest.pypi_daily, prev: prev.pypi_daily, color: '#a855f7', icon: '📈' },
+    { label: 'Kumo Engine PyPI Cumulative Downloads', value: latest.pypi_cumulative, prev: prev.pypi_cumulative, color: '#3b82f6', icon: '📦' },
+    { label: 'Kumo Engine PyPI Daily Downloads', value: latest.pypi_daily, prev: prev.pypi_daily, color: '#a855f7', icon: '📈' },
     { label: 'Tracking Days', value: data.length, prev: data.length, color: '#76b900', icon: '📅' },
   ];
 
