@@ -326,7 +326,7 @@ function renderCharts(data) {
     tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
     legend: { bottom: 0, textStyle: { color: '#94a3b8', fontSize: 11 } },
     grid: { left: 70, right: 70, top: 30, bottom: 55 },
-    xAxis: { type: 'category', dates, axisLabel: { color: '#64748b' }, axisLine: { lineStyle: { color: '#1e293b' } } },
+    xAxis: { type: 'category', data: dates, axisLabel: { color: '#64748b' }, axisLine: { lineStyle: { color: '#1e293b' } } },
     yAxis: [
       { type: 'value', name: 'Cumulative', nameTextStyle: { color: '#64748b' }, axisLabel: { color: '#64748b' }, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.04)' } } },
       { type: 'value', name: 'Daily', nameTextStyle: { color: '#64748b' }, axisLabel: { color: '#64748b' }, splitLine: { show: false } }
