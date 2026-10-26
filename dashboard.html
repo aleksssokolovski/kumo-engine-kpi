@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📦 Kumo Engine — PyPI Downloads KPI</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --nv-green: #76b900;
+    --nv-green-light: #8ed100;
+    --nv-green-glow: rgba(118, 185, 0, 0.3);
+    --bg-primary: #0a0e17;
+    --bg-secondary: #111827;
+    --bg-card: #1a2332;
+    --bg-card-hover: #1f2b3d;
+    --border: rgba(118, 185, 0, 0.15);
+    --border-hover: rgba(118, 185, 0, 0.4);
+    --text-primary: #f0f4f8;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent-blue: #3b82f6;
+    --accent-purple: #a855f7;
+    --accent-orange: #f59e0b;
+    --accent-pink: #ec4899;
+    --positive: #22c55e;
+    --negative: #ef4444;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      linear-gradient(rgba(118,185,0,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(118,185,0,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Header ── */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--nv-green), transparent);
+    border-radius: 2px;
+  }
+  .header .badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: rgba(118,185,0,0.1);
+    color: var(--nv-green);
+    border: 1px solid rgba(118,185,0,0.2);
+    margin-bottom: 12px;
+  }
+  .header h1 {
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--nv-green), var(--nv-green-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header .subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-top: 8px;
+  }
+  .header .last-updated {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-top: 6px;
+  }
+
+  /* ── KPI Cards ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  @media (max-width: 700px) { .kpi-grid { grid-template-columns: 1fr; } }
+  .kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.25s ease;
+  }
+  .kpi-card:hover {
+    border-color: var(--border-hover);
+    box-shadow: 0 0 20px var(--nv-green-glow);
+    transform: translateY(-2px);
+  }
+  .kpi-card .value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .kpi-card .label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .kpi-card .delta {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .delta-pos { background: rgba(34,197,94,0.12); color: var(--positive); }
+  .delta-neg { background: rgba(239,68,68,0.12); color: var(--negative); }
+  .delta-zero { background: rgba(100,116,139,0.12); color: var(--text-muted); }
+
+  /* ── Section ── */
+  .section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .section-header h2 {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .section-header .section-badge {
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Table ── */
+  table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+  }
+  th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    background: rgba(118,185,0,0.06);
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    color: var(--text-secondary);
+  }
+  tr:hover td { background: rgba(118,185,0,0.04); }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 32px 0 16px;
+    color: var(--text-muted);
+    font-size: 0.7rem;
+  }
+  .footer a { color: var(--nv-green); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="badge">📦 PyPI Tracker</div>
+    <h1>Kumo Engine — Downloads KPI</h1>
+    <div class="subtitle">Daily download tracking for <a href="https://pypi.org/project/kumo-engine/" style="color:var(--nv-green);text-decoration:none">kumo-engine</a> on PyPI</div>
+    <div class="last-updated">Last updated: <span id="lastUpdated">—</span></div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div id="kpiCards" class="kpi-grid"></div>
+
+  <!-- Downloads Over Time chart -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📈 Downloads Over Time</h2>
+      <span class="section-badge" style="background:rgba(59,130,246,0.12);color:var(--accent-blue)">Cumulative + Daily</span>
+    </div>
+    <div id="downloadsTimeChart" style="min-height:420px"></div>
+  </div>
+
+  <!-- Daily Log -->
+  <div class="section">
+    <div class="section-header">
+      <h2>📋 Daily KPI Log</h2>
+      <span class="section-badge" style="background:rgba(118,185,0,0.1);color:var(--nv-green)">Raw data</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table id="logTable">
+        <thead><tr><th>Date</th><th style="text-align:right">Daily Downloads</th><th style="text-align:right">Cumulative Downloads</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>Kumo Engine KPI Dashboard · Data from <a href="https://pypistats.org/packages/kumo-engine" target="_blank">PyPI Stats</a> · NVIDIA</p>
+  </div>
+
+</div>
+
+<script>
+const CSV_RAW = `date,pypi_daily,pypi_cumulative
+2026-10-26,483,483`;
+
+function parseCSV(raw) {
+  const lines = raw.trim().split('\n');
+  const headers = lines[0].split(',');
+  return lines.slice(1).map(line => {
+    const vals = line.split(',');
+    const obj = {};
+    headers.forEach((h, i) => {
+      obj[h] = isNaN(vals[i]) ? vals[i] : Number(vals[i]);
+    });
+    return obj;
+  });
+}
+
+async function loadData() { return parseCSV(CSV_RAW); }
+
+function fmtNum(n) { return n.toLocaleString(); }
+function fmtDelta(cur, prev) {
+  const d = cur - prev;
+  if (d > 0) return { text: `+${fmtNum(d)}`, cls: 'delta-pos' };
+  if (d < 0) return { text: fmtNum(d), cls: 'delta-neg' };
+  return { text: '—', cls: 'delta-zero' };
+}
+
+function renderCards(data) {
+  const latest = data[data.length - 1];
+  const prev = data.length > 1 ? data[data.length - 2] : latest;
+
+  const cards = [
+    { label: 'Cumulative Downloads', value: latest.pypi_cumulative, prev: prev.pypi_cumulative, color: '#3b82f6', icon: '📦' },
+    { label: 'Daily Downloads', value: latest.pypi_daily, prev: prev.pypi_daily, color: '#a855f7', icon: '📈' },
+    { label: 'Tracking Days', value: data.length, prev: data.length, color: '#76b900', icon: '📅' },
+  ];
+
+  const container = document.getElementById('kpiCards');
+  container.innerHTML = cards.map(c => {
+    const d = fmtDelta(c.value, c.prev);
+    return `<div class="kpi-card">
+      <div class="value" style="color:${c.color}">${c.icon} ${fmtNum(c.value)}</div>
+      <div class="label">${c.label}</div>
+      <span class="delta ${d.cls}">${d.text}</span>
+    </div>`;
+  }).join('');
+}
+
+function renderTable(data) {
+  const tbody = document.querySelector('#logTable tbody');
+  tbody.innerHTML = [...data].reverse().map(r =>
+    `<tr><td>${r.date}</td><td class="num">${fmtNum(r.pypi_daily)}</td><td class="num">${fmtNum(r.pypi_cumulative)}</td></tr>`
+  ).join('');
+}
+
+function renderCharts(data) {
+  const dates = data.map(d => d.date);
+  const chartTheme = { backgroundColor: 'transparent' };
+
+  const dlTimeChart = echarts.init(document.getElementById('downloadsTimeChart'));
+  dlTimeChart.setOption({
+    ...chartTheme,
+    tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+    legend: { bottom: 0, textStyle: { color: '#94a3b8', fontSize: 11 } },
+    grid: { left: 70, right: 70, top: 30, bottom: 55 },
+    xAxis: { type: 'category', dates, axisLabel: { color: '#64748b' }, axisLine: { lineStyle: { color: '#1e293b' } } },
+    yAxis: [
+      { type: 'value', name: 'Cumulative', nameTextStyle: { color: '#64748b' }, axisLabel: { color: '#64748b' }, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.04)' } } },
+      { type: 'value', name: 'Daily', nameTextStyle: { color: '#64748b' }, axisLabel: { color: '#64748b' }, splitLine: { show: false } }
+    ],
+    series: [
+      {
+        name: 'Cumulative Downloads',
+        data: data.map(d => d.pypi_cumulative),
+        type: 'line',
+        smooth: true,
+        yAxisIndex: 0,
+        lineStyle: { color: '#3b82f6', width: 3 },
+        itemStyle: { color: '#3b82f6' },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: 'rgba(59,130,246,0.25)' },
+            { offset: 1, color: 'rgba(59,130,246,0.02)' }
+          ])
+        }
+      },
+      {
+        name: 'Daily Downloads',
+        data: data.map(d => d.pypi_daily),
+        type: 'bar',
+        yAxisIndex: 1,
+        itemStyle: { color: 'rgba(168,85,247,0.7)', borderRadius: [4, 4, 0, 0] },
+        barMaxWidth: 24
+      }
+    ]
+  });
+
+  window.addEventListener('resize', () => { dlTimeChart.resize(); });
+}
+
+loadData().then(data => {
+  document.getElementById('lastUpdated').textContent = data[data.length - 1].date;
+  renderCards(data);
+  renderTable(data);
+  renderCharts(data);
+});
+</script>
+</body>
+</html>
